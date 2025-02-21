@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Data Fetching with XMLHttpRequest</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #userData {
+            margin-top: 20px;
+        }
+        .user {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user h3 {
+            margin: 0; 
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fetch User Data from API</h1>
+    <button id="fetchButton">Fetch User Data</button>  
+
+
+    
+
+    <div id="userData"></div> <!-- Where the fetched data will be displayed -->
+
+    <script>
+        // Event listener for the button click
+        document.getElementById('fetchButton').addEventListener('click', function() {
+            // Create a new XMLHttpRequest object
+            const xhr = new XMLHttpRequest();
+            
+            // Initialize the GET request to the API
+            xhr.open('GET', 'https://jsonplaceholder.typicode.com/users', true);
+            
+            // Set up the onload event handler
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    // Parse the response text as JSON
+                    const res = JSON.parse(xhr.responseText);
+                    
+                    // Display the fetched data
+                    displayUserData(res);
+                } else {
+                    console.log('Request failed with status: ' + xhr.status);
+                }
+            };
+
+            // Send the request
+            xhr.send();
+        });
+
+        // Function to display user data on the page
+        function displayUserData(users) {
+            const userDataContainer = document.getElementById('userData');
+            userDataContainer.innerHTML = ''; // Clear any previous data
+            
+            // Loop through the array of users and display each one
+            users.forEach(user => {
+                const userDiv = document.createElement('div');
+                userDiv.classList.add('user');
+                userDiv.innerHTML = `
+                    <h3>${user.name}</h3>
+                    <p>Email: ${user.email}</p>
+                    <p>Phone: ${user.phone}</p>
+                    <p>Website: <a href="http://${user.website}" target="_blank">${user.website}</a></p>
+                `;
+                userDataContainer.appendChild(userDiv); // Append user data to the container
+            });
+        }
+    </script>
+
+</body>
+</html>

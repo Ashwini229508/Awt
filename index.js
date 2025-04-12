@@ -1,53 +1,73 @@
-const express = require('express'); 
-const app = express(); 
+const express = require('express');
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const app = express();
+app.use(express.json());
 
+const userschema=Schema
+const dburl="mongodb://localhost:27017/"
 
-const students = [{ id: 1, name: 'John' }, { id: 2, name: 'Jane' }, { id: 3, name: 'Tom' }];
- /*app.get('/student', (req, res) => {
-    const id = parseInt(req.query.id); 
-    
-    if (id) {  
-        let student = students.find(s => s.id === id);
-        
-        if (student) {
-            res.status(200).json({
-                "message": "Student found",
-                "student": student
-            });
-        } else {
-            res.status(404).json({ 
-                "message": "Student not found"
-            });
-        }
-    } else {
-        res.json(students);
-    }
-});*/
-app.delete("/deletedstudent/:id", (req, res) => {
-    const id = parseInt(req.params.id); 
-    let student = students.find(s => s.id === id);  
-
-    if (student) {  
-        students = students.filter(s => s.id !== id);  
-        res.status(200).json({
-            "message": "Student deleted successfully",
-            "student": student  
-        });
-    } else {
-        res.status(404).json({
-            "message": "Student not found"
-        });
-    }
-});
-
-/*app.post("/addstudent",(req,res)=>{
-    let student=req.
-    students.push(student)
-    res.status(200).json({
-        "message":"student added successfully",
-        "students":student
+mongoose.connect(dburl)
+    .then(() => {
+        console.log("DB connection established");
     })
-})*/
-app.listen(2000, () => {  
-    console.log("Server started on http://localhost:2000");
-});
+    .catch(err => {
+        console.log("Error in connection: " + err);
+    });
+
+    const Userschema = new Schema({
+        name: { type: String, required: true, unique: true },
+        email: { type: Number, required: true },
+        password: { type: String, required: true, unique: true },
+    });
+    
+    const User = mongoose.model('User', Userschema);
+    
+    
+
+    app.post("/user", (req, res) => {
+        const newUser = new User(req.body);
+        newUser.save()
+            .then(() => res.status(200).json({ "message": "User added successfully" }))
+            .catch(err => res.status(400).json({ "message": "Error in adding user: " + err }));
+    });
+    /*app.delete("/delteduser/:name",(req,res)=>{
+        const userName = req.params.name;
+        User.deleteOne({name: userName})
+            .then(users => res.status(200).json({"message":"User deleted Successfully"}))
+            .catch(err => res.status(500).json({ "message": "Error fetching users: " + err })); 
+    })
+    
+    app.get("/user/:name", (req, res) => {
+        const userName = req.params.name;
+    
+        User.findOne({ name: userName })
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ "message": "User not found" });
+                }
+                res.status(200).json(user); 
+            })
+            .catch(err => res.status(400).json({"message":"Error fetching users: " + err }))
+    }); 
+    
+    app.put("/user/:name", (req, res) => {
+        const userName = req.params.name;
+        const updatedData = req.body;
+    
+        User.findOneAndUpdate({ name: userName }, updatedData, { new: true })
+            .then(updatedUser => {
+                if (!updatedUser) {
+                    return res.status(404).json({ "message": "User not found" });
+                }
+                res.status(200).json({ "message": "User updated successfully", user: updatedUser });
+            })
+            .catch(err => {
+                res.status(400).json({ "message": "Error updating user: " + err });
+            });
+    });*/
+    
+     
+    app.listen(2000, () => {
+        console.log("server started on port 3000")
+    });
